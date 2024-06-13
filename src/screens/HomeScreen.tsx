@@ -1,42 +1,69 @@
-
-import React from 'react';
-import { View, Text, FlatList, ListRenderItem } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, TouchableOpacity } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import { styles } from '../theme/styles';
+import { ref, onValue } from 'firebase/database';
+import { auth, dbRealTime } from '../configs/firebaseConfig';
+import { NewCommentModal } from '../components/NewCommentModal';
+import { useNavigation } from '@react-navigation/native';
 
-// Definición de la interfaz para los productos
-interface Product {
-    name: string;
-    price: number;
+interface Comment {
+    id: string;
+    email: string;
+    comment: string;
 }
 
-// Arreglo de productos
-const products: Product[] = [
-    { name: 'mouse', price: 50 },
-    { name: 'laptop', price: 1500 },
-    { name: 'teclado', price: 80 },
-    { name: 'monitor', price: 120 }
-];
-
 export const HomeScreen = () => {
-    const totalAmount = products.reduce((sum, product) => sum + product.price, 0);
+    const [showModalComment, setShowModalComment] = useState<boolean>(false);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const navigation = useNavigation();
 
-    const renderItem: ListRenderItem<Product> = ({ item }) => (
-        <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>{item.name}</Text>
-            <Text style={styles.itemText}>${item.price}</Text>
-        </View>
-    );
+    const loadComments = () => {
+        const dbRef = ref(dbRealTime, 'comments/' + auth.currentUser?.uid);
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            const loadedComments: Comment[] = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    loadedComments.push({
+                        id: key,
+                        ...data[key]
+                    });
+                });
+            }
+            setComments(loadedComments);
+        });
+    }
+
+    useEffect(() => {
+        loadComments();
+    }, []);
 
     return (
         <View style={styles.root}>
+            <Text style={[styles.title, { marginTop: 10 }]}>Comentarios</Text>
+            <Button mode="contained" onPress={() => setShowModalComment(true)}>Nuevo Comentario</Button>
             <FlatList
-                data={products}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
+                data={comments}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <View style={styles.commentContainer}>
+                        <View style={styles.commentContent}>
+                            <Text style={styles.commentEmail}>{item.email}</Text>
+                            <Text style={styles.commentText}>{item.comment}</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('Detail', { comment: item })}>
+                            <Text style={styles.arrow}>&#9654;</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                contentContainerStyle={{ flexGrow: 1, marginTop: 10 }}
             />
-            <View style={styles.totalContainer}>
-                <Text style={styles.totalText}>Total a pagar: ${totalAmount}</Text>
-            </View>
+            <NewCommentModal 
+                showModalComment={showModalComment} 
+                setShowModalComment={setShowModalComment} 
+                loadComments={loadComments}
+            />
         </View>
     );
-};
+}

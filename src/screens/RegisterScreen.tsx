@@ -9,6 +9,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 interface FormRegister {
     email: string;
     password: string;
+    confirmPassword: string; // Añadido campo de confirmación de contraseña
 }
 
 interface MessageSnackBar {
@@ -20,7 +21,8 @@ interface MessageSnackBar {
 export const RegisterScreen = () => {
     const [formRegister, setFormRegister] = useState<FormRegister>({
         email: "",
-        password: ""
+        password: "",
+        confirmPassword: "" // Añadido campo de confirmación de contraseña
     });
 
     const [showMessage, setShowMessage] = useState<MessageSnackBar>({
@@ -30,6 +32,7 @@ export const RegisterScreen = () => {
     });
 
     const [hiddenPassword, setHiddenPassword] = useState<boolean>(true);
+    const [hiddenConfirmPassword, setHiddenConfirmPassword] = useState<boolean>(true);
 
     const navigation = useNavigation();
 
@@ -38,7 +41,7 @@ export const RegisterScreen = () => {
     }
 
     const handlerRegister = async () => {
-        const { email, password } = formRegister;
+        const { email, password, confirmPassword } = formRegister;
 
         // Validación de email
         if (!email.includes('@')) {
@@ -60,7 +63,17 @@ export const RegisterScreen = () => {
             return;
         }
 
-        if (!email || !password) {
+        // Validación de confirmación de contraseña
+        if (password !== confirmPassword) {
+            setShowMessage({
+                visible: true,
+                message: 'Las contraseñas no coinciden',
+                color: '#b53333'
+            });
+            return;
+        }
+
+        if (!email || !password || !confirmPassword) {
             setShowMessage({
                 visible: true,
                 message: 'Completa todos los campos!',
@@ -108,6 +121,15 @@ export const RegisterScreen = () => {
                     onPress={() => setHiddenPassword(!hiddenPassword)} />}
                 style={styles.inputs}
                 onChangeText={(value) => handlerSetValues('password', value)} />
+            <TextInput
+                mode='outlined'
+                label='Confirmar Contraseña'
+                placeholder='Confirme su contraseña'
+                secureTextEntry={hiddenConfirmPassword}
+                right={<TextInput.Icon icon="eye"
+                    onPress={() => setHiddenConfirmPassword(!hiddenConfirmPassword)} />}
+                style={styles.inputs}
+                onChangeText={(value) => handlerSetValues('confirmPassword', value)} />
             <Button style={styles.button} mode="contained" onPress={handlerRegister}>
                 Registrar
             </Button>

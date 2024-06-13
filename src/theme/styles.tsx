@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 10,
-        backgroundColor: '#ADD8E6' // Fondo celeste
+        padding: 10,
+        backgroundColor: '#f0f0f0', // Fondo gris claro
     },
     inputs: {
         width: '90%'
@@ -58,5 +58,49 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    
+    commentContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 5,
+        width: '90%',
+    },
+    commentContent: {
+        flex: 1,
+    },
+    commentEmail: {
+        fontWeight: 'bold',
+    },
+    commentText: {
+        marginTop: 5,
+    },
+    arrow: {
+        fontSize: 24,
+        color: '#000',
+    },
+    modal: {
+        backgroundColor: 'white',
+        padding: 20,
+        margin: 20,
+        borderRadius: 10,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    input: {
+        marginBottom: 10,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    detailText: {
+        fontSize: 18,
+        marginVertical: 5,
+    },
 });

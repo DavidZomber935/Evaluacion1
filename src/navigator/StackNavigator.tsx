@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import { HomeScreen } from '../screens/HomeScreen';
+import { DetailScreen } from '../screens/DetailScreen';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../configs/firebaseConfig';
@@ -25,7 +26,8 @@ const routesNoAuth: Routes[] = [
 
 //Arreglo que contenga las rutas si el usuario está autenticado
 const routesAuth: Routes[] = [
-    { name: "Home", screen: HomeScreen }
+    { name: "Home", screen: HomeScreen },
+    { name: "Detail", screen: DetailScreen }
 ]
 
 export const StackNavigator = () => {
